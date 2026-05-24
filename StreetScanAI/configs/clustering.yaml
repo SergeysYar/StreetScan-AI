@@ -1,5 +1,13 @@
-﻿method: dbscan
-dbscan_eps: 0.8
-dbscan_min_points: 12
-euclidean_tolerance: 1.0
-euclidean_min_cluster_size: 10
+clustering:
+  method: dbscan
+  eps: 0.8
+  min_points: 20
+  euclidean_tolerance: 0.6
+  min_cluster_size: 30
+  max_cluster_size: null
+  remove_noise: true
+  color_noise_gray: true
+  compute_bounding_boxes: true
+  compute_oriented_bounding_boxes: false
+  save_screenshot: false
+  random_seed: 42

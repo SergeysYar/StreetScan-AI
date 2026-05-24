@@ -11,6 +11,11 @@ from src.analytics.density_analysis import density_histogram
 from src.analytics.spatial_statistics import spatial_stats
 from src.benchmark.benchmark_runner import BenchmarkConfig, run_benchmark
 from src.benchmark.report_generator import generate_markdown_report
+from src.clustering.dbscan_clustering import (
+    ClusteringConfig,
+    PointCloudClusterer,
+    load_clustering_config,
+)
 from src.clustering.cluster_analysis import extract_cluster_stats
 from src.clustering.dbscan_clustering import run_dbscan
 from src.io.load_pointcloud import load_point_cloud, to_numpy
@@ -46,7 +51,19 @@ def main() -> None:
     preprocess_cmd.add_argument("--estimate-density", action="store_true")
     preprocess_cmd.add_argument("--output-format", choices=["ply", "pcd"], default=None)
 
-    for name in ["cluster", "segment", "analyze", "track", "visualize", "benchmark", "generate-report"]:
+    cluster_cmd = sub.add_parser("cluster")
+    cluster_cmd.add_argument("--input", required=True)
+    cluster_cmd.add_argument("--output-dir", default="outputs/clusters")
+    cluster_cmd.add_argument("--method", choices=["dbscan", "euclidean"], default=None)
+    cluster_cmd.add_argument("--eps", type=float, default=None)
+    cluster_cmd.add_argument("--min-points", type=int, default=None)
+    cluster_cmd.add_argument("--euclidean-tolerance", type=float, default=None)
+    cluster_cmd.add_argument("--min-cluster-size", type=int, default=None)
+    cluster_cmd.add_argument("--max-cluster-size", type=int, default=None)
+    cluster_cmd.add_argument("--remove-noise", action="store_true")
+    cluster_cmd.add_argument("--save-screenshot", action="store_true")
+
+    for name in ["segment", "analyze", "track", "visualize", "benchmark", "generate-report"]:
         cmd = sub.add_parser(name)
         cmd.add_argument("--input", default="data/raw/sample.ply")
     args = parser.parse_args()
@@ -74,14 +91,32 @@ def main() -> None:
         preprocessor.preprocess(Path(args.input), Path(args.output_dir))
         return
 
+    if args.command == "cluster":
+        base_cfg = load_clustering_config(Path(args.config) if args.config else None)
+        merged = ClusteringConfig(**base_cfg.__dict__)
+        if args.method is not None:
+            merged.method = args.method
+        if args.eps is not None:
+            merged.eps = args.eps
+        if args.min_points is not None:
+            merged.min_points = args.min_points
+        if args.euclidean_tolerance is not None:
+            merged.euclidean_tolerance = args.euclidean_tolerance
+        if args.min_cluster_size is not None:
+            merged.min_cluster_size = args.min_cluster_size
+        if args.max_cluster_size is not None:
+            merged.max_cluster_size = args.max_cluster_size
+        if args.remove_noise:
+            merged.remove_noise = True
+        if args.save_screenshot:
+            merged.save_screenshot = True
+        PointCloudClusterer(merged).cluster_file(Path(args.input), Path(args.output_dir))
+        return
+
     cfg = load_project_config(args.config)
     input_path = Path(args.input)
     cloud = load_point_cloud(input_path)
-    if args.command == "cluster":
-        labels = run_dbscan(cloud, cfg["clustering"]["dbscan_eps"], cfg["clustering"]["dbscan_min_points"])
-        points, _ = to_numpy(cloud)
-        extract_cluster_stats(points, labels).to_csv("outputs/clusters/cluster_metrics.csv", index=False)
-    elif args.command == "segment":
+    if args.command == "segment":
         points, _ = to_numpy(cloud)
         labels = segment_points(points)
         cloud.colors = o3d.utility.Vector3dVector(labels_to_colors(labels))
