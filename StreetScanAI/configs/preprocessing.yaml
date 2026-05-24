@@ -1,8 +1,16 @@
-﻿voxel_size: 0.2
-sor_nb_neighbors: 20
-sor_std_ratio: 2.0
-radius_nb_points: 8
-radius: 0.6
-normalize: true
-center: true
-ground_distance_threshold: 0.25
+preprocessing:
+  voxel_size: 0.1
+  enable_voxel_downsampling: true
+  enable_statistical_outlier_removal: true
+  statistical_nb_neighbors: 20
+  statistical_std_ratio: 2.0
+  enable_radius_outlier_removal: false
+  radius_nb_points: 8
+  radius: 0.5
+  enable_ground_filtering: true
+  ground_distance_threshold: 0.2
+  ground_ransac_n: 3
+  ground_num_iterations: 1000
+  normalize_coordinates: false
+  estimate_density: true
+  output_format: ply

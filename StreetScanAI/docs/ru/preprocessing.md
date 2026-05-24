@@ -1,21 +1,66 @@
-﻿# Предобработка
+# Предобработка
 
 ## Назначение
-Техническая документация подсистемы StreetScanAI.
+Подсистема предобработки подготавливает сырые городские LiDAR-облака точек для последующих этапов кластеризации, сегментации, аналитики и визуализации за счет фильтрации шума и геометрической нормализации.
 
-## Команды
-```bash
-python -m src.cli preprocess --config configs/config.yaml --input data/raw/sample.ply
-```
+## Поддерживаемые форматы
+- Вход: `.ply`, `.pcd`, `.xyz`
+- Выход: `.ply` или `.pcd` (настраивается)
+
+## Доступные операции
+- Voxel downsampling
+- Статистическая фильтрация выбросов
+- Радиусная фильтрация выбросов
+- Оценка плоскости земли RANSAC и разделение на ground/non-ground
+- Нормализация координат (только перенос к центроиду)
+- Оценка плотности точек (`points / volume AABB`)
 
 ## Пример конфигурации
 ```yaml
-# см. configs/config.yaml
+preprocessing:
+  voxel_size: 0.1
+  enable_voxel_downsampling: true
+  enable_statistical_outlier_removal: true
+  statistical_nb_neighbors: 20
+  statistical_std_ratio: 2.0
+  enable_radius_outlier_removal: false
+  radius_nb_points: 8
+  radius: 0.5
+  enable_ground_filtering: true
+  ground_distance_threshold: 0.2
+  ground_ransac_n: 3
+  ground_num_iterations: 1000
+  normalize_coordinates: false
+  estimate_density: true
+  output_format: ply
 ```
 
-## Выходные артефакты
-- CSV в `outputs/reports` или `outputs/benchmarks`
-- Графики в `outputs/plots`
+## Использование CLI
+```bash
+python src/preprocessing/preprocess_pointcloud.py \
+  --input data/raw/sample.ply \
+  --output-dir outputs/pointclouds/preprocessed \
+  --config configs/preprocessing.yaml
+```
 
-## Заглушка диаграммы
-`[Placeholder схемы]`
+```bash
+python src/cli.py preprocess \
+  --input data/raw/sample.ply \
+  --output-dir outputs/pointclouds/preprocessed \
+  --ground-filter \
+  --estimate-density
+```
+
+## Выходные файлы
+- `outputs/pointclouds/preprocessed/<name>_preprocessed.(ply|pcd)`
+- `outputs/pointclouds/preprocessed/<name>_ground.(ply|pcd)` (если включено)
+- `outputs/pointclouds/preprocessed/<name>_nonground.(ply|pcd)` (если включено)
+- `outputs/reports/preprocessing/<name>_stats.json`
+- `outputs/reports/preprocessing/<name>_report.md`
+
+## Интерпретация статистики
+- `original_points`, `after_downsampling_points`, `after_outlier_removal_points`, `final_points`: профиль сокращения числа точек
+- `ground_points` / `nonground_points`: качество разделения поверхности земли
+- `bounding_box_*`, `centroid`: геометрические характеристики облака
+- `average_density`: приближенная объемная плотность; `null` означает нулевой/некорректный объем
+- `operations_applied` и `warnings`: трассируемость и диагностика ошибок

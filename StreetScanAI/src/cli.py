@@ -15,7 +15,11 @@ from src.clustering.cluster_analysis import extract_cluster_stats
 from src.clustering.dbscan_clustering import run_dbscan
 from src.io.load_pointcloud import load_point_cloud, to_numpy
 from src.io.save_pointcloud import save_point_cloud
-from src.preprocessing.preprocess_pipeline import PreprocessConfig, run_preprocessing
+from src.preprocessing.preprocess_pointcloud import (
+    PointCloudPreprocessor,
+    PreprocessingConfig,
+    load_preprocessing_config,
+)
 from src.segmentation.semantic_coloring import labels_to_colors
 from src.segmentation.semantic_segmentation import segment_points
 from src.tracking.trajectory_builder import build_trajectories
@@ -30,20 +34,50 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="StreetScanAI unified CLI")
     parser.add_argument("--config", default="configs/config.yaml")
     sub = parser.add_subparsers(dest="command", required=True)
-    for name in ["preprocess", "cluster", "segment", "analyze", "track", "visualize", "benchmark", "generate-report"]:
+    preprocess_cmd = sub.add_parser("preprocess")
+    preprocess_cmd.add_argument("--input", required=True)
+    preprocess_cmd.add_argument("--output-dir", default="outputs/pointclouds/preprocessed")
+    preprocess_cmd.add_argument("--voxel-size", type=float, default=None)
+    preprocess_cmd.add_argument("--no-downsampling", action="store_true")
+    preprocess_cmd.add_argument("--no-statistical-filter", action="store_true")
+    preprocess_cmd.add_argument("--radius-filter", action="store_true")
+    preprocess_cmd.add_argument("--ground-filter", action="store_true")
+    preprocess_cmd.add_argument("--normalize", action="store_true")
+    preprocess_cmd.add_argument("--estimate-density", action="store_true")
+    preprocess_cmd.add_argument("--output-format", choices=["ply", "pcd"], default=None)
+
+    for name in ["cluster", "segment", "analyze", "track", "visualize", "benchmark", "generate-report"]:
         cmd = sub.add_parser(name)
         cmd.add_argument("--input", default="data/raw/sample.ply")
     args = parser.parse_args()
 
+    if args.command == "preprocess":
+        base_cfg = load_preprocessing_config(Path(args.config) if args.config else None)
+        merged = PreprocessingConfig(**base_cfg.__dict__)
+        if args.voxel_size is not None:
+            merged.voxel_size = args.voxel_size
+        if args.no_downsampling:
+            merged.enable_voxel_downsampling = False
+        if args.no_statistical_filter:
+            merged.enable_statistical_outlier_removal = False
+        if args.radius_filter:
+            merged.enable_radius_outlier_removal = True
+        if args.ground_filter:
+            merged.enable_ground_filtering = True
+        if args.normalize:
+            merged.normalize_coordinates = True
+        if args.estimate_density:
+            merged.estimate_density = True
+        if args.output_format is not None:
+            merged.output_format = args.output_format
+        preprocessor = PointCloudPreprocessor(merged)
+        preprocessor.preprocess(Path(args.input), Path(args.output_dir))
+        return
+
     cfg = load_project_config(args.config)
     input_path = Path(args.input)
     cloud = load_point_cloud(input_path)
-
-    if args.command == "preprocess":
-        p = PreprocessConfig(**cfg["preprocessing"])
-        out = run_preprocessing(cloud, p)
-        save_point_cloud(out, Path("outputs/pointclouds/preprocessed.ply"))
-    elif args.command == "cluster":
+    if args.command == "cluster":
         labels = run_dbscan(cloud, cfg["clustering"]["dbscan_eps"], cfg["clustering"]["dbscan_min_points"])
         points, _ = to_numpy(cloud)
         extract_cluster_stats(points, labels).to_csv("outputs/clusters/cluster_metrics.csv", index=False)
