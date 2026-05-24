@@ -1,0 +1,8 @@
+﻿voxel_size: 0.2
+sor_nb_neighbors: 20
+sor_std_ratio: 2.0
+radius_nb_points: 8
+radius: 0.6
+normalize: true
+center: true
+ground_distance_threshold: 0.25

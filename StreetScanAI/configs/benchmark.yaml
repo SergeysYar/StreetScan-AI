@@ -1,0 +1,10 @@
+﻿iterations: 3
+methods:
+  - dbscan
+  - euclidean
+metrics:
+  - runtime
+  - fps
+  - cluster_count
+  - point_density
+  - processing_latency

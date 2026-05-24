@@ -1,0 +1,5 @@
+﻿method: dbscan
+dbscan_eps: 0.8
+dbscan_min_points: 12
+euclidean_tolerance: 1.0
+euclidean_min_cluster_size: 10

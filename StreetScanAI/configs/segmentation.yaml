@@ -1,0 +1,11 @@
+﻿method: heuristic
+enable_pointnet_placeholder: true
+labels:
+  - road
+  - sidewalk
+  - vehicle
+  - pedestrian
+  - vegetation
+  - pole
+  - traffic_sign
+  - building

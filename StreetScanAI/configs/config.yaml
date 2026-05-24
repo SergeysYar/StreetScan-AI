@@ -1,0 +1,37 @@
+﻿project:
+  name: StreetScanAI
+  output_root: outputs
+  log_level: INFO
+
+preprocessing:
+  voxel_size: 0.2
+  sor_nb_neighbors: 20
+  sor_std_ratio: 2.0
+  radius_nb_points: 8
+  radius: 0.6
+  normalize: true
+  center: true
+  ground_distance_threshold: 0.25
+
+clustering:
+  method: dbscan
+  dbscan_eps: 0.8
+  dbscan_min_points: 12
+  euclidean_tolerance: 1.0
+  euclidean_min_cluster_size: 10
+
+segmentation:
+  method: heuristic
+  enable_pointnet_placeholder: true
+
+analytics:
+  grid_resolution: 1.0
+  z_visibility_threshold: 2.2
+
+visualization:
+  point_size: 2.0
+  background: [0.05, 0.05, 0.07]
+
+benchmark:
+  iterations: 3
+  methods: [dbscan, euclidean]
