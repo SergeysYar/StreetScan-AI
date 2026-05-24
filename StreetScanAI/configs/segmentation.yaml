@@ -1,11 +1,16 @@
-﻿method: heuristic
-enable_pointnet_placeholder: true
-labels:
-  - road
-  - sidewalk
-  - vehicle
-  - pedestrian
-  - vegetation
-  - pole
-  - traffic_sign
-  - building
+segmentation:
+  method: baseline
+  weights_path: null
+  device: cpu
+  use_cluster_features: false
+  cluster_labels_path: null
+  cluster_stats_path: null
+  z_ground_threshold: 0.25
+  z_vehicle_min: 0.3
+  z_vehicle_max: 2.2
+  z_pedestrian_min: 0.5
+  z_pedestrian_max: 2.5
+  pole_radius_threshold: 0.25
+  min_points_per_object: 20
+  save_screenshot: false
+  output_format: ply

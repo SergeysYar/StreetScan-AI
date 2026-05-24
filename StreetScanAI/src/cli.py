@@ -25,8 +25,11 @@ from src.preprocessing.preprocess_pointcloud import (
     PreprocessingConfig,
     load_preprocessing_config,
 )
-from src.segmentation.semantic_coloring import labels_to_colors
-from src.segmentation.semantic_segmentation import segment_points
+from src.segmentation.semantic_segmentation import (
+    SegmentationConfig,
+    SemanticSegmenter,
+    load_segmentation_config,
+)
 from src.tracking.trajectory_builder import build_trajectories
 from src.tracking.velocity_estimation import estimate_velocity
 from src.visualization.heatmap_visualizer import save_heatmap
@@ -63,7 +66,17 @@ def main() -> None:
     cluster_cmd.add_argument("--remove-noise", action="store_true")
     cluster_cmd.add_argument("--save-screenshot", action="store_true")
 
-    for name in ["segment", "analyze", "track", "visualize", "benchmark", "generate-report"]:
+    segment_cmd = sub.add_parser("segment")
+    segment_cmd.add_argument("--input", required=True)
+    segment_cmd.add_argument("--output-dir", default="outputs/semantic")
+    segment_cmd.add_argument("--method", choices=["baseline", "pointnet"], default=None)
+    segment_cmd.add_argument("--weights", default=None)
+    segment_cmd.add_argument("--device", choices=["cpu", "cuda"], default=None)
+    segment_cmd.add_argument("--cluster-labels", default=None)
+    segment_cmd.add_argument("--cluster-stats", default=None)
+    segment_cmd.add_argument("--save-screenshot", action="store_true")
+
+    for name in ["analyze", "track", "visualize", "benchmark", "generate-report"]:
         cmd = sub.add_parser(name)
         cmd.add_argument("--input", default="data/raw/sample.ply")
     args = parser.parse_args()
@@ -113,15 +126,30 @@ def main() -> None:
         PointCloudClusterer(merged).cluster_file(Path(args.input), Path(args.output_dir))
         return
 
+    if args.command == "segment":
+        base_cfg = load_segmentation_config(Path(args.config) if args.config else None)
+        merged = SegmentationConfig(**base_cfg.__dict__)
+        if args.method is not None:
+            merged.method = args.method
+        if args.weights is not None:
+            merged.weights_path = args.weights
+        if args.device is not None:
+            merged.device = args.device
+        if args.cluster_labels is not None:
+            merged.cluster_labels_path = args.cluster_labels
+            merged.use_cluster_features = True
+        if args.cluster_stats is not None:
+            merged.cluster_stats_path = args.cluster_stats
+            merged.use_cluster_features = True
+        if args.save_screenshot:
+            merged.save_screenshot = True
+        SemanticSegmenter(merged).segment_file(Path(args.input), Path(args.output_dir))
+        return
+
     cfg = load_project_config(args.config)
     input_path = Path(args.input)
     cloud = load_point_cloud(input_path)
-    if args.command == "segment":
-        points, _ = to_numpy(cloud)
-        labels = segment_points(points)
-        cloud.colors = o3d.utility.Vector3dVector(labels_to_colors(labels))
-        save_point_cloud(cloud, Path("outputs/semantic/semantic_colored.ply"))
-    elif args.command == "analyze":
+    if args.command == "analyze":
         points, _ = to_numpy(cloud)
         hist, _, _ = density_histogram(points, cfg["analytics"]["grid_resolution"])
         save_heatmap(hist, Path("outputs/plots/density_heatmap.png"))
