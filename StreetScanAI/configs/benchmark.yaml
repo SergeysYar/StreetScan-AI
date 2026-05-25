@@ -1,10 +1,52 @@
-﻿iterations: 3
-methods:
-  - dbscan
-  - euclidean
-metrics:
-  - runtime
-  - fps
-  - cluster_count
-  - point_density
-  - processing_latency
+﻿benchmark:
+  modes:
+    - preprocessing
+    - clustering
+    - segmentation
+
+  input: data/raw
+  output_dir: outputs/benchmarks
+  repetitions: 3
+  warmup_runs: 1
+  random_seed: 42
+
+  preprocessing_experiments:
+    - name: voxel_005
+      voxel_size: 0.05
+      enable_statistical_outlier_removal: true
+      enable_ground_filtering: true
+    - name: voxel_010
+      voxel_size: 0.10
+      enable_statistical_outlier_removal: true
+      enable_ground_filtering: true
+    - name: no_ground_filter
+      voxel_size: 0.10
+      enable_statistical_outlier_removal: true
+      enable_ground_filtering: false
+
+  clustering_experiments:
+    - name: dbscan_eps_05
+      method: dbscan
+      eps: 0.5
+      min_points: 20
+    - name: dbscan_eps_08
+      method: dbscan
+      eps: 0.8
+      min_points: 20
+    - name: euclidean_06
+      method: euclidean
+      euclidean_tolerance: 0.6
+      min_cluster_size: 30
+
+  segmentation_experiments:
+    - name: baseline
+      method: baseline
+    - name: pointnet
+      method: pointnet
+      weights_path: null
+
+  ground_truth_labels: null
+
+  metrics:
+    iou_threshold: 0.5
+    ignore_unlabeled: true

@@ -12,8 +12,8 @@ from src.analytics.analytics_pipeline import (
     load_analytics_config,
 )
 from src.analytics.density_analysis import density_histogram
-from src.benchmark.benchmark_runner import BenchmarkConfig, run_benchmark
-from src.benchmark.report_generator import generate_markdown_report
+from src.benchmark.benchmark_runner import BenchmarkConfig, BenchmarkRunner, load_benchmark_config
+from src.benchmark.report_generator import generate_benchmark_report
 from src.clustering.dbscan_clustering import (
     ClusteringConfig,
     PointCloudClusterer,
@@ -40,7 +40,6 @@ from src.visualization.visualization_pipeline import (
     VisualizationPipeline,
     load_visualization_config,
 )
-from src.visualization.plot_metrics import plot_runtime
 from src.utils.cli_utils import load_project_config
 
 
@@ -118,9 +117,16 @@ def main() -> None:
     visualize_cmd.add_argument("--save-animation", action="store_true")
     visualize_cmd.add_argument("--interactive", action="store_true")
 
-    for name in ["benchmark", "generate-report"]:
-        cmd = sub.add_parser(name)
-        cmd.add_argument("--input", default="data/raw/sample.ply")
+    benchmark_cmd = sub.add_parser("benchmark")
+    benchmark_cmd.add_argument("--input", required=True)
+    benchmark_cmd.add_argument("--output-dir", default="outputs/benchmarks")
+    benchmark_cmd.add_argument("--modes", nargs="+", choices=["preprocessing", "clustering", "segmentation"], default=None)
+    benchmark_cmd.add_argument("--ground-truth-labels", default=None)
+    benchmark_cmd.add_argument("--repetitions", type=int, default=None)
+    benchmark_cmd.add_argument("--warmup-runs", type=int, default=None)
+
+    generate_cmd = sub.add_parser("generate-report")
+    generate_cmd.add_argument("--input", default="outputs/benchmarks/benchmark_results.csv")
     args = parser.parse_args()
 
     if args.command == "preprocess":
@@ -251,18 +257,36 @@ def main() -> None:
             merged.interactive = True
         VisualizationPipeline(merged).run(Path(args.input), Path(args.output_dir))
         return
+    if args.command == "benchmark":
+        base_cfg = load_benchmark_config(Path(args.config) if args.config else None)
+        merged = BenchmarkConfig(**base_cfg.__dict__)
+        merged.input = args.input
+        merged.output_dir = args.output_dir
+        if args.modes is not None:
+            merged.modes = list(args.modes)
+        if args.ground_truth_labels is not None:
+            merged.ground_truth_labels = args.ground_truth_labels
+        if args.repetitions is not None:
+            merged.repetitions = args.repetitions
+        if args.warmup_runs is not None:
+            merged.warmup_runs = args.warmup_runs
+        BenchmarkRunner(merged).run()
+        return
+    if args.command == "generate-report":
+        df = pd.read_csv(args.input)
+        summary = {
+            "total_runs": int(df.shape[0]),
+            "successful_runs": int((df["status"] == "success").sum()) if "status" in df.columns else int(df.shape[0]),
+            "failed_runs": int((df["status"] != "success").sum()) if "status" in df.columns else 0,
+            "input_files": sorted(set(df["input_file"].astype(str).tolist())) if "input_file" in df.columns else [],
+            "modes": sorted(set(df["mode"].astype(str).tolist())) if "mode" in df.columns else [],
+        }
+        generate_benchmark_report(df, summary, [], Path("outputs/reports/final_benchmark_report.md"))
+        return
 
     cfg = load_project_config(args.config)
     input_path = Path(args.input)
     cloud = load_point_cloud(input_path)
-    if args.command == "benchmark":
-        result = run_benchmark(cloud, BenchmarkConfig(**cfg["benchmark"]))
-        result.to_csv("outputs/benchmarks/benchmark_results.csv", index=False)
-        plot_runtime(result, Path("outputs/benchmarks/runtime_plot.png"))
-        generate_markdown_report(result, Path("outputs/benchmarks/benchmark_report.md"))
-    elif args.command == "generate-report":
-        df = pd.read_csv("outputs/benchmarks/benchmark_results.csv")
-        generate_markdown_report(df, Path("outputs/reports/final_benchmark_report.md"))
 
 
 if __name__ == "__main__":
