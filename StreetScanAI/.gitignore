@@ -1,28 +1,55 @@
-﻿__pycache__/
+﻿# Python
+__pycache__/
 *.py[cod]
 *.egg-info/
-.venv/
-venv/
-.env
 .pytest_cache/
 .mypy_cache/
 ruff_cache/
-coverage.xml
-htmlcov/
+
+# Virtual environments
+.venv/
+venv/
+.env
+
+# Notebooks
+.ipynb_checkpoints/
+
+# IDE
+.idea/
+.vscode/
+
+# OS
 .DS_Store
 Thumbs.db
+
+# Logs and reports
 *.log
-outputs/**
-!outputs/**/.gitkeep
-data/raw/**
-!data/raw/.gitkeep
-data/processed/**
-!data/processed/.gitkeep
-data/semantic/**
-!data/semantic/.gitkeep
-data/trajectories/**
-!data/trajectories/.gitkeep
-data/benchmarks/**
-!data/benchmarks/.gitkeep
-assets/*.gif
-assets/*.png
+logs/
+coverage.xml
+htmlcov/
+
+# LiDAR and heavy raw assets
+*.ply
+*.pcd
+*.las
+
+# Model weights/checkpoints
+*.pt
+*.pth
+checkpoints/
+
+# Generated outputs
+outputs/
+benchmark_runs/
+
+# Keep output/data folder structure
+!outputs/
+!outputs/**/
+!outputs/**/*.gitkeep
+!data/
+!data/**/
+!data/**/*.gitkeep
+
+# Temporary files
+*.tmp
+*.bak

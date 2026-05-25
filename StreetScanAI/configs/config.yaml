@@ -1,23 +1,37 @@
-﻿preprocessing:
+﻿# StreetScanAI unified runtime configuration (all paths relative to repository root)
+
+preprocessing:
+  # Input LiDAR cloud (.ply/.pcd/.xyz)
   input: data/raw/sample.ply
+  # Directory for preprocessed clouds and reports
   output_dir: outputs/pointclouds/preprocessed
+  # Voxel edge length in meters (recommended: 0.05..0.25)
   voxel_size: 0.1
+  # Enable/disable ground plane filtering
   enable_ground_filtering: true
+  # Compute approximate point density from scene bounds
   estimate_density: true
 
 clustering:
   input: outputs/pointclouds/preprocessed/sample_preprocessed.ply
   output_dir: outputs/clusters
+  # Supported: dbscan | euclidean
   method: dbscan
+  # DBSCAN neighborhood radius in meters (recommended: 0.5..1.2)
   eps: 0.8
+  # DBSCAN minimum points in local neighborhood
   min_points: 20
+  # Minimum accepted cluster size in points
   min_cluster_size: 30
 
 segmentation:
   input: outputs/pointclouds/preprocessed/sample_preprocessed.ply
   output_dir: outputs/semantic
+  # Supported: baseline | pointnet
   method: baseline
+  # Path to trained weights for pointnet mode (if available)
   weights_path: null
+  # Device for inference pipeline
   device: cpu
 
 analytics:
@@ -25,14 +39,18 @@ analytics:
   output_dir: outputs/analytics
   semantic_labels: outputs/semantic/sample_semantic_labels.csv
   cluster_stats: outputs/clusters/sample_cluster_stats.csv
+  # XY grid cell size in meters (recommended: 0.2..1.0)
   grid_resolution: 0.5
   save_plots: true
 
 tracking:
   input: data/trajectories/urban_detections.csv
   output_dir: outputs/trajectories
+  # Frame rate in Hz
   fps: 10.0
+  # Max XYZ association distance per frame in meters
   association_distance: 2.0
+  # Keep unmatched tracks alive for N frames
   max_missed_frames: 5
   save_overlay_cloud: true
 
@@ -42,6 +60,7 @@ visualization:
   semantic_labels: outputs/semantic/sample_semantic_labels.csv
   cluster_labels: outputs/clusters/sample_cluster_labels.csv
   trajectories: outputs/trajectories/sample_tracked_objects.csv
+  # Supported: isometric | top | front | side
   camera_view: isometric
   save_animation: false
 
@@ -51,4 +70,5 @@ benchmark:
   modes:
     - preprocessing
     - clustering
+  # Measured repetitions per experiment
   repetitions: 3

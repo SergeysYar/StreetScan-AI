@@ -4,22 +4,53 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "streetscanai"
-version = "0.1.0"
-description = "LiDAR-based urban scene understanding and 3D spatial analytics framework"
+version = "0.2.0"
+description = "LiDAR-based urban scene understanding, tracking, analytics, visualization, and benchmarking framework"
 readme = "README.md"
 requires-python = ">=3.10"
-license = {text = "MIT"}
-authors = [{name = "StreetScanAI Contributors"}]
+license = { text = "MIT" }
+authors = [
+  { name = "StreetScanAI Contributors" }
+]
+keywords = [
+  "lidar",
+  "point-cloud",
+  "computer-vision",
+  "robotics",
+  "urban-analytics",
+  "3d-perception"
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Science/Research",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+  "Topic :: Scientific/Engineering :: Image Processing"
+]
 dependencies = [
   "numpy>=1.24",
   "pandas>=2.0",
-  "matplotlib>=3.7",
   "scipy>=1.10",
   "scikit-learn>=1.3",
-  "PyYAML>=6.0",
   "open3d>=0.18",
-  "pyvista>=0.43"
+  "pyvista>=0.43",
+  "matplotlib>=3.7",
+  "PyYAML>=6.0"
 ]
+
+[project.optional-dependencies]
+media = ["imageio>=2.34"]
+dev = ["pytest>=8.0"]
+
+[project.urls]
+Homepage = "https://example.com/streetscanai-placeholder"
+Repository = "https://example.com/streetscanai-repository-placeholder"
+Documentation = "https://example.com/streetscanai-docs-placeholder"
+Issues = "https://example.com/streetscanai-issues-placeholder"
 
 [project.scripts]
 streetscan = "src.cli:main"
