@@ -47,14 +47,14 @@ analytics:
 
 ## Примеры CLI
 ```bash
-python src/analytics/analytics_pipeline.py \
+uv run src/analytics/analytics_pipeline.py \
   --input outputs/pointclouds/preprocessed/sample_preprocessed.ply \
   --output-dir outputs/analytics \
   --config configs/analytics.yaml
 ```
 
 ```bash
-python src/cli.py analyze \
+uv run src/cli.py analyze \
   --input outputs/pointclouds/preprocessed/sample_preprocessed.ply \
   --output-dir outputs/analytics \
   --semantic-labels outputs/semantic/sample_semantic_labels.csv \
@@ -66,3 +66,4 @@ python src/cli.py analyze \
 ## Ограничения
 - Профиль видимости является приближенной радиальной оценкой, а не трассировкой лучей.
 - При отсутствии опциональных меток и траекторий метрики трафика и пешеходного потока становятся эвристическими.
+

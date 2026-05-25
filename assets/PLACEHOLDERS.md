@@ -14,4 +14,4 @@ Expected files:
 
 Note:
 - Placeholder files may be empty until real renders are exported.
-- Use `python src/cli.py visualize ...` and `python src/cli.py benchmark ...` to regenerate visuals.
+- Use `uv run src/cli.py visualize ...` and `uv run src/cli.py benchmark ...` to regenerate visuals.

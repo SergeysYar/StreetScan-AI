@@ -1,4 +1,4 @@
-# Clustering
+﻿# Clustering
 
 ## Purpose
 The clustering subsystem extracts object-level groups from urban LiDAR point clouds for downstream traffic interpretation, trajectory estimation, and semantic post-processing.
@@ -16,7 +16,7 @@ The clustering subsystem extracts object-level groups from urban LiDAR point clo
 
 ## DBSCAN Usage
 ```bash
-python src/clustering/dbscan_clustering.py \
+uv run src/clustering/dbscan_clustering.py \
   --input outputs/pointclouds/preprocessed/sample_preprocessed.ply \
   --output-dir outputs/clusters \
   --config configs/clustering.yaml \
@@ -27,7 +27,7 @@ python src/clustering/dbscan_clustering.py \
 
 ## Euclidean Usage
 ```bash
-python src/clustering/dbscan_clustering.py \
+uv run src/clustering/dbscan_clustering.py \
   --input outputs/pointclouds/preprocessed/sample_preprocessed.ply \
   --output-dir outputs/clusters \
   --method euclidean \
@@ -37,7 +37,7 @@ python src/clustering/dbscan_clustering.py \
 
 ## CLI Integration
 ```bash
-python src/cli.py cluster \
+uv run src/cli.py cluster \
   --input outputs/pointclouds/preprocessed/sample_preprocessed.ply \
   --output-dir outputs/clusters \
   --method dbscan \
@@ -62,3 +62,4 @@ python src/cli.py cluster \
 - Urban medium-density scans:
   - DBSCAN: `eps=0.6..1.0`, `min_points=15..30`
   - Euclidean: `euclidean_tolerance=0.4..0.8`, `min_cluster_size=20..50`
+

@@ -1,21 +1,21 @@
-# Предобработка
+﻿# РџСЂРµРґРѕР±СЂР°Р±РѕС‚РєР°
 
-## Назначение
-Подсистема предобработки подготавливает сырые городские LiDAR-облака точек для последующих этапов кластеризации, сегментации, аналитики и визуализации за счет фильтрации шума и геометрической нормализации.
+## РќР°Р·РЅР°С‡РµРЅРёРµ
+РџРѕРґСЃРёСЃС‚РµРјР° РїСЂРµРґРѕР±СЂР°Р±РѕС‚РєРё РїРѕРґРіРѕС‚Р°РІР»РёРІР°РµС‚ СЃС‹СЂС‹Рµ РіРѕСЂРѕРґСЃРєРёРµ LiDAR-РѕР±Р»Р°РєР° С‚РѕС‡РµРє РґР»СЏ РїРѕСЃР»РµРґСѓСЋС‰РёС… СЌС‚Р°РїРѕРІ РєР»Р°СЃС‚РµСЂРёР·Р°С†РёРё, СЃРµРіРјРµРЅС‚Р°С†РёРё, Р°РЅР°Р»РёС‚РёРєРё Рё РІРёР·СѓР°Р»РёР·Р°С†РёРё Р·Р° СЃС‡РµС‚ С„РёР»СЊС‚СЂР°С†РёРё С€СѓРјР° Рё РіРµРѕРјРµС‚СЂРёС‡РµСЃРєРѕР№ РЅРѕСЂРјР°Р»РёР·Р°С†РёРё.
 
-## Поддерживаемые форматы
-- Вход: `.ply`, `.pcd`, `.xyz`
-- Выход: `.ply` или `.pcd` (настраивается)
+## РџРѕРґРґРµСЂР¶РёРІР°РµРјС‹Рµ С„РѕСЂРјР°С‚С‹
+- Р’С…РѕРґ: `.ply`, `.pcd`, `.xyz`
+- Р’С‹С…РѕРґ: `.ply` РёР»Рё `.pcd` (РЅР°СЃС‚СЂР°РёРІР°РµС‚СЃСЏ)
 
-## Доступные операции
+## Р”РѕСЃС‚СѓРїРЅС‹Рµ РѕРїРµСЂР°С†РёРё
 - Voxel downsampling
-- Статистическая фильтрация выбросов
-- Радиусная фильтрация выбросов
-- Оценка плоскости земли RANSAC и разделение на ground/non-ground
-- Нормализация координат (только перенос к центроиду)
-- Оценка плотности точек (`points / volume AABB`)
+- РЎС‚Р°С‚РёСЃС‚РёС‡РµСЃРєР°СЏ С„РёР»СЊС‚СЂР°С†РёСЏ РІС‹Р±СЂРѕСЃРѕРІ
+- Р Р°РґРёСѓСЃРЅР°СЏ С„РёР»СЊС‚СЂР°С†РёСЏ РІС‹Р±СЂРѕСЃРѕРІ
+- РћС†РµРЅРєР° РїР»РѕСЃРєРѕСЃС‚Рё Р·РµРјР»Рё RANSAC Рё СЂР°Р·РґРµР»РµРЅРёРµ РЅР° ground/non-ground
+- РќРѕСЂРјР°Р»РёР·Р°С†РёСЏ РєРѕРѕСЂРґРёРЅР°С‚ (С‚РѕР»СЊРєРѕ РїРµСЂРµРЅРѕСЃ Рє С†РµРЅС‚СЂРѕРёРґСѓ)
+- РћС†РµРЅРєР° РїР»РѕС‚РЅРѕСЃС‚Рё С‚РѕС‡РµРє (`points / volume AABB`)
 
-## Пример конфигурации
+## РџСЂРёРјРµСЂ РєРѕРЅС„РёРіСѓСЂР°С†РёРё
 ```yaml
 preprocessing:
   voxel_size: 0.1
@@ -35,32 +35,33 @@ preprocessing:
   output_format: ply
 ```
 
-## Использование CLI
+## РСЃРїРѕР»СЊР·РѕРІР°РЅРёРµ CLI
 ```bash
-python src/preprocessing/preprocess_pointcloud.py \
+uv run src/preprocessing/preprocess_pointcloud.py \
   --input data/raw/sample.ply \
   --output-dir outputs/pointclouds/preprocessed \
   --config configs/preprocessing.yaml
 ```
 
 ```bash
-python src/cli.py preprocess \
+uv run src/cli.py preprocess \
   --input data/raw/sample.ply \
   --output-dir outputs/pointclouds/preprocessed \
   --ground-filter \
   --estimate-density
 ```
 
-## Выходные файлы
+## Р’С‹С…РѕРґРЅС‹Рµ С„Р°Р№Р»С‹
 - `outputs/pointclouds/preprocessed/<name>_preprocessed.(ply|pcd)`
-- `outputs/pointclouds/preprocessed/<name>_ground.(ply|pcd)` (если включено)
-- `outputs/pointclouds/preprocessed/<name>_nonground.(ply|pcd)` (если включено)
+- `outputs/pointclouds/preprocessed/<name>_ground.(ply|pcd)` (РµСЃР»Рё РІРєР»СЋС‡РµРЅРѕ)
+- `outputs/pointclouds/preprocessed/<name>_nonground.(ply|pcd)` (РµСЃР»Рё РІРєР»СЋС‡РµРЅРѕ)
 - `outputs/reports/preprocessing/<name>_stats.json`
 - `outputs/reports/preprocessing/<name>_report.md`
 
-## Интерпретация статистики
-- `original_points`, `after_downsampling_points`, `after_outlier_removal_points`, `final_points`: профиль сокращения числа точек
-- `ground_points` / `nonground_points`: качество разделения поверхности земли
-- `bounding_box_*`, `centroid`: геометрические характеристики облака
-- `average_density`: приближенная объемная плотность; `null` означает нулевой/некорректный объем
-- `operations_applied` и `warnings`: трассируемость и диагностика ошибок
+## РРЅС‚РµСЂРїСЂРµС‚Р°С†РёСЏ СЃС‚Р°С‚РёСЃС‚РёРєРё
+- `original_points`, `after_downsampling_points`, `after_outlier_removal_points`, `final_points`: РїСЂРѕС„РёР»СЊ СЃРѕРєСЂР°С‰РµРЅРёСЏ С‡РёСЃР»Р° С‚РѕС‡РµРє
+- `ground_points` / `nonground_points`: РєР°С‡РµСЃС‚РІРѕ СЂР°Р·РґРµР»РµРЅРёСЏ РїРѕРІРµСЂС…РЅРѕСЃС‚Рё Р·РµРјР»Рё
+- `bounding_box_*`, `centroid`: РіРµРѕРјРµС‚СЂРёС‡РµСЃРєРёРµ С…Р°СЂР°РєС‚РµСЂРёСЃС‚РёРєРё РѕР±Р»Р°РєР°
+- `average_density`: РїСЂРёР±Р»РёР¶РµРЅРЅР°СЏ РѕР±СЉРµРјРЅР°СЏ РїР»РѕС‚РЅРѕСЃС‚СЊ; `null` РѕР·РЅР°С‡Р°РµС‚ РЅСѓР»РµРІРѕР№/РЅРµРєРѕСЂСЂРµРєС‚РЅС‹Р№ РѕР±СЉРµРј
+- `operations_applied` Рё `warnings`: С‚СЂР°СЃСЃРёСЂСѓРµРјРѕСЃС‚СЊ Рё РґРёР°РіРЅРѕСЃС‚РёРєР° РѕС€РёР±РѕРє
+

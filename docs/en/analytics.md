@@ -47,14 +47,14 @@ analytics:
 
 ## CLI Examples
 ```bash
-python src/analytics/analytics_pipeline.py \
+uv run src/analytics/analytics_pipeline.py \
   --input outputs/pointclouds/preprocessed/sample_preprocessed.ply \
   --output-dir outputs/analytics \
   --config configs/analytics.yaml
 ```
 
 ```bash
-python src/cli.py analyze \
+uv run src/cli.py analyze \
   --input outputs/pointclouds/preprocessed/sample_preprocessed.ply \
   --output-dir outputs/analytics \
   --semantic-labels outputs/semantic/sample_semantic_labels.csv \
@@ -66,3 +66,4 @@ python src/cli.py analyze \
 ## Limitations
 - Visibility profile is approximate radial coverage, not full ray tracing.
 - Traffic and pedestrian metrics become heuristic if optional labels/trajectories are missing.
+

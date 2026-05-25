@@ -51,14 +51,14 @@ tracking:
 
 ## CLI Examples
 ```bash
-python src/tracking/tracking_pipeline.py \
+uv run src/tracking/tracking_pipeline.py \
   --input data/trajectories/urban_detections.csv \
   --output-dir outputs/trajectories \
   --config configs/tracking.yaml
 ```
 
 ```bash
-python src/cli.py track \
+uv run src/cli.py track \
   --input data/trajectories/urban_detections.csv \
   --output-dir outputs/trajectories \
   --fps 10 \
@@ -69,3 +69,4 @@ python src/cli.py track \
 ## Limitations
 - Association is geometric and may fail with long occlusions.
 - Quality depends on input detection consistency and frame rate.
+

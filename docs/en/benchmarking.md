@@ -39,7 +39,7 @@ The benchmarking subsystem compares preprocessing, clustering, and segmentation 
 
 ## CLI Examples
 ```bash
-python src/benchmark/benchmark_runner.py \
+uv run src/benchmark/benchmark_runner.py \
   --input data/raw/sample.ply \
   --output-dir outputs/benchmarks \
   --config configs/benchmark.yaml \
@@ -48,7 +48,7 @@ python src/benchmark/benchmark_runner.py \
 ```
 
 ```bash
-python src/cli.py benchmark \
+uv run src/cli.py benchmark \
   --input data/raw/sample.ply \
   --output-dir outputs/benchmarks \
   --modes preprocessing clustering \
@@ -58,3 +58,4 @@ python src/cli.py benchmark \
 ## Limitations
 - Accuracy metrics are unavailable when ground-truth labels are missing or mismatched.
 - Failed experiments are preserved in CSV/report and do not stop remaining runs.
+

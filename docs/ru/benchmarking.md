@@ -39,7 +39,7 @@
 
 ## Примеры CLI
 ```bash
-python src/benchmark/benchmark_runner.py \
+uv run src/benchmark/benchmark_runner.py \
   --input data/raw/sample.ply \
   --output-dir outputs/benchmarks \
   --config configs/benchmark.yaml \
@@ -48,7 +48,7 @@ python src/benchmark/benchmark_runner.py \
 ```
 
 ```bash
-python src/cli.py benchmark \
+uv run src/cli.py benchmark \
   --input data/raw/sample.ply \
   --output-dir outputs/benchmarks \
   --modes preprocessing clustering \
@@ -58,3 +58,4 @@ python src/cli.py benchmark \
 ## Ограничения
 - Метрики accuracy недоступны при отсутствии GT или несоответствии размеров разметки.
 - Ошибки отдельных экспериментов фиксируются в CSV/отчете и не прерывают остальные запуски.
+

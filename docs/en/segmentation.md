@@ -1,4 +1,4 @@
-# Segmentation
+﻿# Segmentation
 
 ## Purpose
 The semantic segmentation subsystem assigns point-wise urban classes for downstream perception and analysis.
@@ -58,14 +58,14 @@ segmentation:
 
 ## CLI Examples
 ```bash
-python src/segmentation/semantic_segmentation.py \
+uv run src/segmentation/semantic_segmentation.py \
   --input outputs/pointclouds/preprocessed/sample_preprocessed.ply \
   --output-dir outputs/semantic \
   --method baseline
 ```
 
 ```bash
-python src/cli.py segment \
+uv run src/cli.py segment \
   --input outputs/pointclouds/preprocessed/sample_preprocessed.ply \
   --output-dir outputs/semantic \
   --method baseline \
@@ -75,3 +75,4 @@ python src/cli.py segment \
 ## Limitations and Future Work
 - Baseline rules are scene-dependent and limited in accuracy.
 - PointNet++ path is a placeholder until real trained model integration is added.
+

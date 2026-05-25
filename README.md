@@ -44,7 +44,7 @@ Quick links: [Quick Start](#quick-start) · [Architecture](#architecture) · [Vi
 - Multi-frame trajectory tracking with Kalman filtering and smoothing
 - Rendering pipeline for semantic/cluster/bird-eye/trajectory outputs
 - Reproducible benchmarking across subsystem configurations
-- Unified CLI orchestration via `python src/cli.py <command>`
+- Unified CLI orchestration via `uv run src/cli.py <command>`
 
 ## Architecture
 ```mermaid
@@ -78,26 +78,20 @@ flowchart TD
 
 ## Installation
 ```bash
-python -m venv .venv
-# Linux/macOS
-source .venv/bin/activate
-# Windows PowerShell
-# .venv\Scripts\Activate.ps1
-
-pip install -r requirements.txt
+uv sync
 ```
 
 ## Quick Start
 Run from repository root:
 
 ```bash
-python src/cli.py preprocess --input data/raw/sample.ply --output-dir outputs/pointclouds/preprocessed
-python src/cli.py cluster --input outputs/pointclouds/preprocessed/sample_preprocessed.ply --output-dir outputs/clusters --method dbscan
-python src/cli.py segment --input outputs/pointclouds/preprocessed/sample_preprocessed.ply --output-dir outputs/semantic --method baseline
-python src/cli.py analyze --input outputs/pointclouds/preprocessed/sample_preprocessed.ply --output-dir outputs/analytics
-python src/cli.py track --input data/trajectories/urban_detections.csv --output-dir outputs/trajectories --fps 10
-python src/cli.py visualize --input outputs/pointclouds/preprocessed/sample_preprocessed.ply --output-dir outputs/visualizations --camera-view isometric
-python src/cli.py benchmark --input data/raw/sample.ply --output-dir outputs/benchmarks --modes preprocessing clustering --repetitions 3
+uv run src/cli.py preprocess --input data/raw/sample.ply --output-dir outputs/pointclouds/preprocessed
+uv run src/cli.py cluster --input outputs/pointclouds/preprocessed/sample_preprocessed.ply --output-dir outputs/clusters --method dbscan
+uv run src/cli.py segment --input outputs/pointclouds/preprocessed/sample_preprocessed.ply --output-dir outputs/semantic --method baseline
+uv run src/cli.py analyze --input outputs/pointclouds/preprocessed/sample_preprocessed.ply --output-dir outputs/analytics
+uv run src/cli.py track --input data/trajectories/urban_detections.csv --output-dir outputs/trajectories --fps 10
+uv run src/cli.py visualize --input outputs/pointclouds/preprocessed/sample_preprocessed.ply --output-dir outputs/visualizations --camera-view isometric
+uv run src/cli.py benchmark --input data/raw/sample.ply --output-dir outputs/benchmarks --modes preprocessing clustering --repetitions 3
 ```
 
 ## Visualization Results
@@ -183,6 +177,7 @@ MIT. See `LICENSE`.
 - **Can I benchmark a directory of point clouds?** Yes, via `benchmark --input <directory>`.
 
 ## Troubleshooting
-- Missing `yaml` module: install dependencies via `pip install -r requirements.txt`
+- Missing `yaml` module: install dependencies via `uv sync`
 - Headless render issues: use non-interactive mode and check fallback warnings in reports
 - Empty outputs: verify input path and command-specific required files
+

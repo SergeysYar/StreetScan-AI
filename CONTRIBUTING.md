@@ -12,13 +12,7 @@ StreetScanAI is a modular LiDAR perception and urban spatial analytics framework
 
 ## Setup
 ```bash
-python -m venv .venv
-# Linux/macOS
-source .venv/bin/activate
-# Windows PowerShell
-# .venv\Scripts\Activate.ps1
-
-pip install -r requirements.txt
+uv sync
 ```
 
 ## Development Workflow
@@ -55,7 +49,7 @@ Examples:
 
 ## Testing Recommendations
 - Run targeted tests: `pytest tests/`
-- Validate command help: `python src/cli.py --help`
+- Validate command help: `uv run src/cli.py --help`
 - Validate affected subsystem CLI paths with sample config/input
 
 ## Reporting Issues
@@ -67,3 +61,4 @@ When opening issues, include:
 
 ## Review Expectations
 Maintainers prioritize correctness, reproducibility, modularity, and documentation consistency.
+

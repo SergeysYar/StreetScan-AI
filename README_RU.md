@@ -40,7 +40,7 @@ StreetScanAI — инженерный фреймворк для **предобр
 - Трекинг динамических объектов (Kalman + smoothing)
 - Визуализация (semantic/cluster/bird-eye/trajectory/animation)
 - Воспроизводимый бенчмаркинг конфигураций
-- Единый CLI: `python src/cli.py <command>`
+- Единый CLI: `uv run src/cli.py <command>`
 
 ## Архитектура
 ```mermaid
@@ -74,26 +74,20 @@ flowchart TD
 
 ## Установка
 ```bash
-python -m venv .venv
-# Linux/macOS
-source .venv/bin/activate
-# Windows PowerShell
-# .venv\Scripts\Activate.ps1
-
-pip install -r requirements.txt
+uv sync
 ```
 
 ## Быстрый старт
 Запуск из корня репозитория:
 
 ```bash
-python src/cli.py preprocess --input data/raw/sample.ply --output-dir outputs/pointclouds/preprocessed
-python src/cli.py cluster --input outputs/pointclouds/preprocessed/sample_preprocessed.ply --output-dir outputs/clusters --method dbscan
-python src/cli.py segment --input outputs/pointclouds/preprocessed/sample_preprocessed.ply --output-dir outputs/semantic --method baseline
-python src/cli.py analyze --input outputs/pointclouds/preprocessed/sample_preprocessed.ply --output-dir outputs/analytics
-python src/cli.py track --input data/trajectories/urban_detections.csv --output-dir outputs/trajectories --fps 10
-python src/cli.py visualize --input outputs/pointclouds/preprocessed/sample_preprocessed.ply --output-dir outputs/visualizations --camera-view isometric
-python src/cli.py benchmark --input data/raw/sample.ply --output-dir outputs/benchmarks --modes preprocessing clustering --repetitions 3
+uv run src/cli.py preprocess --input data/raw/sample.ply --output-dir outputs/pointclouds/preprocessed
+uv run src/cli.py cluster --input outputs/pointclouds/preprocessed/sample_preprocessed.ply --output-dir outputs/clusters --method dbscan
+uv run src/cli.py segment --input outputs/pointclouds/preprocessed/sample_preprocessed.ply --output-dir outputs/semantic --method baseline
+uv run src/cli.py analyze --input outputs/pointclouds/preprocessed/sample_preprocessed.ply --output-dir outputs/analytics
+uv run src/cli.py track --input data/trajectories/urban_detections.csv --output-dir outputs/trajectories --fps 10
+uv run src/cli.py visualize --input outputs/pointclouds/preprocessed/sample_preprocessed.ply --output-dir outputs/visualizations --camera-view isometric
+uv run src/cli.py benchmark --input data/raw/sample.ply --output-dir outputs/benchmarks --modes preprocessing clustering --repetitions 3
 ```
 
 ## Визуализация и результаты
@@ -159,3 +153,4 @@ assets/
 
 ## Лицензия
 MIT, см. `LICENSE`.
+

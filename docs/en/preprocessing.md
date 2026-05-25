@@ -1,4 +1,4 @@
-# Preprocessing
+﻿# Preprocessing
 
 ## Purpose
 The preprocessing subsystem prepares raw urban LiDAR clouds for downstream clustering, segmentation, analytics, and visualization by reducing noise and normalizing geometry.
@@ -37,14 +37,14 @@ preprocessing:
 
 ## CLI Usage
 ```bash
-python src/preprocessing/preprocess_pointcloud.py \
+uv run src/preprocessing/preprocess_pointcloud.py \
   --input data/raw/sample.ply \
   --output-dir outputs/pointclouds/preprocessed \
   --config configs/preprocessing.yaml
 ```
 
 ```bash
-python src/cli.py preprocess \
+uv run src/cli.py preprocess \
   --input data/raw/sample.ply \
   --output-dir outputs/pointclouds/preprocessed \
   --ground-filter \
@@ -64,3 +64,4 @@ python src/cli.py preprocess \
 - `bounding_box_*`, `centroid`: geometric envelope and position
 - `average_density`: approximate volumetric density; `null` means invalid/zero volume
 - `operations_applied` and `warnings`: traceability and failure diagnostics
+

@@ -118,7 +118,7 @@ def generate_benchmark_report(
         "",
         "## 12. Reproducibility command",
         "```bash",
-        "python src/benchmark/benchmark_runner.py --input <path> --output-dir outputs/benchmarks --config configs/benchmark.yaml",
+        "uv run src/benchmark/benchmark_runner.py --input <path> --output-dir outputs/benchmarks --config configs/benchmark.yaml",
         "```",
         "",
         "## Plots",

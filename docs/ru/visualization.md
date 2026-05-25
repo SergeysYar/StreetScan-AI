@@ -50,14 +50,14 @@ visualization:
 
 ## Примеры CLI
 ```bash
-python src/visualization/visualization_pipeline.py \
+uv run src/visualization/visualization_pipeline.py \
   --input outputs/pointclouds/preprocessed/sample_preprocessed.ply \
   --output-dir outputs/visualizations \
   --config configs/visualization.yaml
 ```
 
 ```bash
-python src/cli.py visualize \
+uv run src/cli.py visualize \
   --input outputs/pointclouds/preprocessed/sample_preprocessed.ply \
   --semantic-labels outputs/semantic/sample_semantic_labels.csv \
   --cluster-labels outputs/clusters/sample_cluster_labels.csv \
@@ -70,3 +70,4 @@ python src/cli.py visualize \
 ## Ограничения в headless-средах
 - В безголовых окружениях off-screen рендер может быть недоступен для части backend’ов; пайплайн продолжает работу с предупреждениями.
 - Для сборки GIF требуется `imageio`; иначе сохраняются кадры и фиксируется предупреждение.
+
