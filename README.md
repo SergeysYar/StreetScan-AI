@@ -4,7 +4,6 @@
 ![Python](https://img.shields.io/badge/python-3.10%2B-blue)
 ![Open3D](https://img.shields.io/badge/Open3D-required-orange)
 ![PyVista](https://img.shields.io/badge/PyVista-optional-009688)
-![License](https://img.shields.io/badge/license-MIT-green)
 ![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-informational)
 ![Last Commit](https://img.shields.io/badge/last_commit-placeholder-lightgrey)
 ![Repo Size](https://img.shields.io/badge/repo_size-placeholder-lightgrey)
@@ -27,7 +26,6 @@ Quick links: [Quick Start](#quick-start) · [Architecture](#architecture) · [Vi
 - [Project Structure](#project-structure)
 - [Roadmap](#roadmap)
 - [Contributing](#contributing)
-- [License](#license)
 - [FAQ](#faq)
 - [Troubleshooting](#troubleshooting)
 
@@ -177,9 +175,6 @@ assets/
 
 ## Contributing
 See `CONTRIBUTING.md` for setup, workflow, commit/branch conventions, and PR guidelines.
-
-## License
-MIT. See `LICENSE`.
 
 ## FAQ
 - **Can I run without semantic labels?** Yes. Optional inputs are handled with warnings.

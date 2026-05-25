@@ -4,7 +4,6 @@
 ![Python](https://img.shields.io/badge/python-3.10%2B-blue)
 ![Open3D](https://img.shields.io/badge/Open3D-required-orange)
 ![PyVista](https://img.shields.io/badge/PyVista-optional-009688)
-![License](https://img.shields.io/badge/license-MIT-green)
 ![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-informational)
 
 **LiDAR-перцепция и городская 3D пространственная аналитика для робототехники и автономных систем.**
@@ -26,7 +25,6 @@ StreetScanAI — инженерный фреймворк для **предобр
 - [Структура проекта](#структура-проекта)
 - [Дорожная карта](#дорожная-карта)
 - [Contributing](#contributing)
-- [Лицензия](#лицензия)
 
 ## Позиционирование проекта
 - Область: **Computer Vision / LiDAR / 3D Perception / Robotics**
@@ -165,7 +163,3 @@ assets/
 
 ## Contributing
 См. `CONTRIBUTING.md`.
-
-## Лицензия
-MIT, см. `LICENSE`.
-
