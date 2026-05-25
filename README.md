@@ -13,7 +13,7 @@
 
 StreetScanAI is a production-oriented framework for **urban point-cloud preprocessing, clustering, semantic understanding, spatial analytics, trajectory tracking, visualization, and benchmarking**.
 
-Quick links: [Quick Start](#quick-start) · [Architecture](#architecture) · [Visualization](#visualization-results) · [Benchmarking](#benchmarking) · [Docs](#documentation)
+Quick links: [Quick Start](#quick-start) · [Architecture](#architecture) · [Visualization](#visualization-results) · [Benchmarking](#benchmarking) · [Docs](#documentation) · [Русская версия](README_RU.md)
 
 ## Table Of Contents
 - [Project Hero](#project-hero)
@@ -127,9 +127,18 @@ To regenerate demo-ready outputs, run CLI pipeline commands in [Quick Start](#qu
   - `outputs/plots/benchmarks/point_count_reduction.png`
 
 ## Documentation
-- English docs: `docs/en/`
-- Russian docs: `docs/ru/`
-- Unified CLI guide: `docs/en/cli.md`, `docs/ru/cli.md`
+- English docs:
+  - `docs/en/architecture.md`
+  - `docs/en/preprocessing.md`
+  - `docs/en/clustering.md`
+  - `docs/en/segmentation.md`
+  - `docs/en/analytics.md`
+  - `docs/en/tracking.md`
+  - `docs/en/visualization.md`
+  - `docs/en/benchmarking.md`
+  - `docs/en/cli.md`
+  - `docs/en/final_report.md`
+- Russian documentation is available in [README_RU.md](README_RU.md) and `docs/ru/`.
 
 ## Project Structure
 ```text
