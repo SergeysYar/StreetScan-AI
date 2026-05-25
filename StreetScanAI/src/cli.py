@@ -35,7 +35,11 @@ from src.tracking.tracking_pipeline import (
     TrackingPipelineConfig,
     load_tracking_config,
 )
-from src.visualization.heatmap_visualizer import save_heatmap
+from src.visualization.visualization_pipeline import (
+    VisualizationConfig,
+    VisualizationPipeline,
+    load_visualization_config,
+)
 from src.visualization.plot_metrics import plot_runtime
 from src.utils.cli_utils import load_project_config
 
@@ -101,7 +105,20 @@ def main() -> None:
     track_cmd.add_argument("--smoothing-window", type=int, default=None)
     track_cmd.add_argument("--save-overlay-cloud", action="store_true")
 
-    for name in ["visualize", "benchmark", "generate-report"]:
+    visualize_cmd = sub.add_parser("visualize")
+    visualize_cmd.add_argument("--input", required=True)
+    visualize_cmd.add_argument("--output-dir", default="outputs/visualizations")
+    visualize_cmd.add_argument("--semantic-labels", default=None)
+    visualize_cmd.add_argument("--cluster-labels", default=None)
+    visualize_cmd.add_argument("--density-grid", default=None)
+    visualize_cmd.add_argument("--occupancy-grid", default=None)
+    visualize_cmd.add_argument("--trajectories", default=None)
+    visualize_cmd.add_argument("--backend", choices=["open3d", "pyvista"], default=None)
+    visualize_cmd.add_argument("--camera-view", choices=["isometric", "top", "front", "side"], default=None)
+    visualize_cmd.add_argument("--save-animation", action="store_true")
+    visualize_cmd.add_argument("--interactive", action="store_true")
+
+    for name in ["benchmark", "generate-report"]:
         cmd = sub.add_parser(name)
         cmd.add_argument("--input", default="data/raw/sample.ply")
     args = parser.parse_args()
@@ -211,15 +228,34 @@ def main() -> None:
             merged.save_overlay_cloud = True
         TrackingPipeline(merged).run(Path(args.input), Path(args.output_dir))
         return
+    if args.command == "visualize":
+        base_cfg = load_visualization_config(Path(args.config) if args.config else None)
+        merged = VisualizationConfig(**base_cfg.__dict__)
+        if args.semantic_labels is not None:
+            merged.semantic_labels_path = args.semantic_labels
+        if args.cluster_labels is not None:
+            merged.cluster_labels_path = args.cluster_labels
+        if args.density_grid is not None:
+            merged.density_grid_path = args.density_grid
+        if args.occupancy_grid is not None:
+            merged.occupancy_grid_path = args.occupancy_grid
+        if args.trajectories is not None:
+            merged.trajectories_path = args.trajectories
+        if args.backend is not None:
+            merged.backend = args.backend
+        if args.camera_view is not None:
+            merged.camera_view = args.camera_view
+        if args.save_animation:
+            merged.save_animation = True
+        if args.interactive:
+            merged.interactive = True
+        VisualizationPipeline(merged).run(Path(args.input), Path(args.output_dir))
+        return
 
     cfg = load_project_config(args.config)
     input_path = Path(args.input)
     cloud = load_point_cloud(input_path)
-    if args.command == "visualize":
-        points, _ = to_numpy(cloud)
-        hist, _, _ = density_histogram(points, cfg["analytics"]["grid_resolution"])
-        save_heatmap(hist, Path("outputs/plots/scene_heatmap.png"), title="Scene Density")
-    elif args.command == "benchmark":
+    if args.command == "benchmark":
         result = run_benchmark(cloud, BenchmarkConfig(**cfg["benchmark"]))
         result.to_csv("outputs/benchmarks/benchmark_results.csv", index=False)
         plot_runtime(result, Path("outputs/benchmarks/runtime_plot.png"))

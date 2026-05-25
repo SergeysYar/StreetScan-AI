@@ -1,0 +1,22 @@
+﻿visualization:
+  backend: open3d
+  image_width: 1600
+  image_height: 1000
+  point_size: 2.0
+  background_color: [1.0, 1.0, 1.0]
+  camera_view: isometric
+  save_screenshot: true
+  save_animation: false
+  animation_frames: 60
+  animation_fps: 20
+  bird_eye_resolution: 0.2
+  plot_dpi: 150
+  show_axes: true
+  show_legend: true
+  output_format: png
+  semantic_labels_path: null
+  cluster_labels_path: null
+  density_grid_path: null
+  occupancy_grid_path: null
+  trajectories_path: null
+  interactive: false
