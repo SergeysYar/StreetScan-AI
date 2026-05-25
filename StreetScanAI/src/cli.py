@@ -5,10 +5,13 @@ import argparse
 from pathlib import Path
 
 import pandas as pd
-import open3d as o3d
 
+from src.analytics.analytics_pipeline import (
+    AnalyticsConfig,
+    UrbanAnalyticsPipeline,
+    load_analytics_config,
+)
 from src.analytics.density_analysis import density_histogram
-from src.analytics.spatial_statistics import spatial_stats
 from src.benchmark.benchmark_runner import BenchmarkConfig, run_benchmark
 from src.benchmark.report_generator import generate_markdown_report
 from src.clustering.dbscan_clustering import (
@@ -19,7 +22,6 @@ from src.clustering.dbscan_clustering import (
 from src.clustering.cluster_analysis import extract_cluster_stats
 from src.clustering.dbscan_clustering import run_dbscan
 from src.io.load_pointcloud import load_point_cloud, to_numpy
-from src.io.save_pointcloud import save_point_cloud
 from src.preprocessing.preprocess_pointcloud import (
     PointCloudPreprocessor,
     PreprocessingConfig,
@@ -76,7 +78,18 @@ def main() -> None:
     segment_cmd.add_argument("--cluster-stats", default=None)
     segment_cmd.add_argument("--save-screenshot", action="store_true")
 
-    for name in ["analyze", "track", "visualize", "benchmark", "generate-report"]:
+    analyze_cmd = sub.add_parser("analyze")
+    analyze_cmd.add_argument("--input", required=True)
+    analyze_cmd.add_argument("--output-dir", default="outputs/analytics")
+    analyze_cmd.add_argument("--semantic-labels", default=None)
+    analyze_cmd.add_argument("--cluster-stats", default=None)
+    analyze_cmd.add_argument("--trajectories", default=None)
+    analyze_cmd.add_argument("--grid-resolution", type=float, default=None)
+    analyze_cmd.add_argument("--occupancy-threshold", type=int, default=None)
+    analyze_cmd.add_argument("--sensor-origin", nargs=3, type=float, default=None)
+    analyze_cmd.add_argument("--save-plots", action="store_true")
+
+    for name in ["track", "visualize", "benchmark", "generate-report"]:
         cmd = sub.add_parser(name)
         cmd.add_argument("--input", default="data/raw/sample.ply")
     args = parser.parse_args()
@@ -146,15 +159,30 @@ def main() -> None:
         SemanticSegmenter(merged).segment_file(Path(args.input), Path(args.output_dir))
         return
 
+    if args.command == "analyze":
+        base_cfg = load_analytics_config(Path(args.config) if args.config else None)
+        merged = AnalyticsConfig(**base_cfg.__dict__)
+        if args.semantic_labels is not None:
+            merged.semantic_labels_path = args.semantic_labels
+        if args.cluster_stats is not None:
+            merged.cluster_stats_path = args.cluster_stats
+        if args.trajectories is not None:
+            merged.trajectory_path = args.trajectories
+        if args.grid_resolution is not None:
+            merged.grid_resolution = args.grid_resolution
+        if args.occupancy_threshold is not None:
+            merged.occupancy_threshold = args.occupancy_threshold
+        if args.sensor_origin is not None:
+            merged.sensor_origin = [float(v) for v in args.sensor_origin]
+        if args.save_plots:
+            merged.save_plots = True
+        UrbanAnalyticsPipeline(merged).run(Path(args.input), Path(args.output_dir))
+        return
+
     cfg = load_project_config(args.config)
     input_path = Path(args.input)
     cloud = load_point_cloud(input_path)
-    if args.command == "analyze":
-        points, _ = to_numpy(cloud)
-        hist, _, _ = density_histogram(points, cfg["analytics"]["grid_resolution"])
-        save_heatmap(hist, Path("outputs/plots/density_heatmap.png"))
-        pd.DataFrame([spatial_stats(points)]).to_csv("outputs/reports/spatial_stats.csv", index=False)
-    elif args.command == "track":
+    if args.command == "track":
         points, _ = to_numpy(cloud)
         labels = run_dbscan(cloud, 0.8, 12)
         stats = extract_cluster_stats(points, labels)

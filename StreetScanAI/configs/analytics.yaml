@@ -1,3 +1,18 @@
-﻿grid_resolution: 1.0
-z_visibility_threshold: 2.2
-kde_bandwidth: 1.2
+analytics:
+  grid_resolution: 0.5
+  height_axis: z
+  projection_axes: [x, y]
+  density_normalization: true
+  occupancy_threshold: 1
+  max_range: 80.0
+  sensor_origin: [0.0, 0.0, 0.0]
+  visibility_angle_step_deg: 1.0
+  visibility_range_bins: 80
+  semantic_vehicle_labels: ["vehicle"]
+  semantic_pedestrian_labels: ["pedestrian"]
+  save_plots: true
+  plot_dpi: 150
+  output_format: png
+  semantic_labels_path: null
+  cluster_stats_path: null
+  trajectory_path: null
