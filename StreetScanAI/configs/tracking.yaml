@@ -1,0 +1,12 @@
+﻿tracking:
+  fps: 10.0
+  association_distance_threshold: 2.0
+  max_missed_frames: 5
+  min_track_length: 3
+  enable_kalman_filter: true
+  enable_smoothing: true
+  smoothing_window: 5
+  velocity_units: m/s
+  plot_dpi: 150
+  save_overlay_cloud: true
+  default_class_name: unknown

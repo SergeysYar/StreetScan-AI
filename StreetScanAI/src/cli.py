@@ -19,8 +19,6 @@ from src.clustering.dbscan_clustering import (
     PointCloudClusterer,
     load_clustering_config,
 )
-from src.clustering.cluster_analysis import extract_cluster_stats
-from src.clustering.dbscan_clustering import run_dbscan
 from src.io.load_pointcloud import load_point_cloud, to_numpy
 from src.preprocessing.preprocess_pointcloud import (
     PointCloudPreprocessor,
@@ -32,11 +30,13 @@ from src.segmentation.semantic_segmentation import (
     SemanticSegmenter,
     load_segmentation_config,
 )
-from src.tracking.trajectory_builder import build_trajectories
-from src.tracking.velocity_estimation import estimate_velocity
+from src.tracking.tracking_pipeline import (
+    TrackingPipeline,
+    TrackingPipelineConfig,
+    load_tracking_config,
+)
 from src.visualization.heatmap_visualizer import save_heatmap
 from src.visualization.plot_metrics import plot_runtime
-from src.visualization.trajectory_visualizer import render_trajectories
 from src.utils.cli_utils import load_project_config
 
 
@@ -89,7 +89,19 @@ def main() -> None:
     analyze_cmd.add_argument("--sensor-origin", nargs=3, type=float, default=None)
     analyze_cmd.add_argument("--save-plots", action="store_true")
 
-    for name in ["track", "visualize", "benchmark", "generate-report"]:
+    track_cmd = sub.add_parser("track")
+    track_cmd.add_argument("--input", required=True)
+    track_cmd.add_argument("--output-dir", default="outputs/trajectories")
+    track_cmd.add_argument("--fps", type=float, default=None)
+    track_cmd.add_argument("--association-distance", type=float, default=None)
+    track_cmd.add_argument("--max-missed-frames", type=int, default=None)
+    track_cmd.add_argument("--min-track-length", type=int, default=None)
+    track_cmd.add_argument("--no-kalman", action="store_true")
+    track_cmd.add_argument("--no-smoothing", action="store_true")
+    track_cmd.add_argument("--smoothing-window", type=int, default=None)
+    track_cmd.add_argument("--save-overlay-cloud", action="store_true")
+
+    for name in ["visualize", "benchmark", "generate-report"]:
         cmd = sub.add_parser(name)
         cmd.add_argument("--input", default="data/raw/sample.ply")
     args = parser.parse_args()
@@ -178,19 +190,32 @@ def main() -> None:
             merged.save_plots = True
         UrbanAnalyticsPipeline(merged).run(Path(args.input), Path(args.output_dir))
         return
+    if args.command == "track":
+        base_cfg = load_tracking_config(Path(args.config) if args.config else None)
+        merged = TrackingPipelineConfig(**base_cfg.__dict__)
+        if args.fps is not None:
+            merged.fps = args.fps
+        if args.association_distance is not None:
+            merged.association_distance_threshold = args.association_distance
+        if args.max_missed_frames is not None:
+            merged.max_missed_frames = args.max_missed_frames
+        if args.min_track_length is not None:
+            merged.min_track_length = args.min_track_length
+        if args.no_kalman:
+            merged.enable_kalman_filter = False
+        if args.no_smoothing:
+            merged.enable_smoothing = False
+        if args.smoothing_window is not None:
+            merged.smoothing_window = args.smoothing_window
+        if args.save_overlay_cloud:
+            merged.save_overlay_cloud = True
+        TrackingPipeline(merged).run(Path(args.input), Path(args.output_dir))
+        return
 
     cfg = load_project_config(args.config)
     input_path = Path(args.input)
     cloud = load_point_cloud(input_path)
-    if args.command == "track":
-        points, _ = to_numpy(cloud)
-        labels = run_dbscan(cloud, 0.8, 12)
-        stats = extract_cluster_stats(points, labels)
-        stats["frame"] = 0
-        tracks = estimate_velocity(build_trajectories(stats))
-        tracks.to_csv("outputs/trajectories/tracks.csv", index=False)
-        render_trajectories(tracks, Path("outputs/trajectories/trajectories.png"))
-    elif args.command == "visualize":
+    if args.command == "visualize":
         points, _ = to_numpy(cloud)
         hist, _, _ = density_histogram(points, cfg["analytics"]["grid_resolution"])
         save_heatmap(hist, Path("outputs/plots/scene_heatmap.png"), title="Scene Density")
