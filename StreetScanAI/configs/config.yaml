@@ -1,37 +1,54 @@
-﻿project:
-  name: StreetScanAI
-  output_root: outputs
-  log_level: INFO
-
-preprocessing:
-  voxel_size: 0.2
-  sor_nb_neighbors: 20
-  sor_std_ratio: 2.0
-  radius_nb_points: 8
-  radius: 0.6
-  normalize: true
-  center: true
-  ground_distance_threshold: 0.25
+﻿preprocessing:
+  input: data/raw/sample.ply
+  output_dir: outputs/pointclouds/preprocessed
+  voxel_size: 0.1
+  enable_ground_filtering: true
+  estimate_density: true
 
 clustering:
+  input: outputs/pointclouds/preprocessed/sample_preprocessed.ply
+  output_dir: outputs/clusters
   method: dbscan
-  dbscan_eps: 0.8
-  dbscan_min_points: 12
-  euclidean_tolerance: 1.0
-  euclidean_min_cluster_size: 10
+  eps: 0.8
+  min_points: 20
+  min_cluster_size: 30
 
 segmentation:
-  method: heuristic
-  enable_pointnet_placeholder: true
+  input: outputs/pointclouds/preprocessed/sample_preprocessed.ply
+  output_dir: outputs/semantic
+  method: baseline
+  weights_path: null
+  device: cpu
 
 analytics:
-  grid_resolution: 1.0
-  z_visibility_threshold: 2.2
+  input: outputs/pointclouds/preprocessed/sample_preprocessed.ply
+  output_dir: outputs/analytics
+  semantic_labels: outputs/semantic/sample_semantic_labels.csv
+  cluster_stats: outputs/clusters/sample_cluster_stats.csv
+  grid_resolution: 0.5
+  save_plots: true
+
+tracking:
+  input: data/trajectories/urban_detections.csv
+  output_dir: outputs/trajectories
+  fps: 10.0
+  association_distance: 2.0
+  max_missed_frames: 5
+  save_overlay_cloud: true
 
 visualization:
-  point_size: 2.0
-  background: [0.05, 0.05, 0.07]
+  input: outputs/pointclouds/preprocessed/sample_preprocessed.ply
+  output_dir: outputs/visualizations
+  semantic_labels: outputs/semantic/sample_semantic_labels.csv
+  cluster_labels: outputs/clusters/sample_cluster_labels.csv
+  trajectories: outputs/trajectories/sample_tracked_objects.csv
+  camera_view: isometric
+  save_animation: false
 
 benchmark:
-  iterations: 3
-  methods: [dbscan, euclidean]
+  input: data/raw/sample.ply
+  output_dir: outputs/benchmarks
+  modes:
+    - preprocessing
+    - clustering
+  repetitions: 3
